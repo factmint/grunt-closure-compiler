@@ -16,7 +16,8 @@ module.exports = function(grunt) {
     var closurePath = '',
         reportFile = '',
         data = this.data,
-        done = this.async();
+        done = this.async(),
+        jvmArgs = '';
 
     // Check for closure path.
     if (data.closurePath) {
@@ -32,8 +33,12 @@ module.exports = function(grunt) {
           '\n');
       return false;
     }
+    
+    if (data.jvmArgs) {
+      jvmArgs = data.jvmArgs;
+    }
 
-    var command = 'java -jar "' + closurePath + '/build/compiler.jar"';
+    var command = 'java ' + jvmArgs + ' -jar "' + closurePath + '/build/compiler.jar"';
 
     data.cwd = data.cwd || './';
 
@@ -86,6 +91,8 @@ module.exports = function(grunt) {
 
     // because closure compiler does not create dirs.
     grunt.file.write(data.jsOutputFile, '');
+    
+    grunt.log.writeln("Command is: " + command);
 
     // Minify WebGraph class.
     exec(command, { maxBuffer: data.maxBuffer * 1024, cwd: data.cwd }, function(err, stdout, stderr) {
